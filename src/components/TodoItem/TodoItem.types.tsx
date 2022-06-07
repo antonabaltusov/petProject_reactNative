@@ -4,4 +4,5 @@ export type TodoItemProps = {
   todo: Todo;
   i: number;
   onComplete: (id: number) => void;
+  removeTodo: (id: number) => void;
 };

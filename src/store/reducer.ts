@@ -1,6 +1,7 @@
 import {FETCH_STATUSES} from '../utils/constants';
 import {
   CHANGE_TODO,
+  DELETE_TODO,
   GET_TODOS_FAILURE,
   GET_TODOS_REQUEST,
   GET_TODOS_SUCCESS,
@@ -8,6 +9,7 @@ import {
 import {
   Action,
   ChangeTodoAction,
+  DeleteTodoAction,
   GetTodosSuccessAction,
   TodosState,
 } from './types';
@@ -33,7 +35,7 @@ const todos = (state = initialState, action: Action): TodosState => {
       return {
         ...state,
         status: FETCH_STATUSES.success,
-        todos: (action as GetTodosSuccessAction).payload,
+        todos: {...state.todos, ...(action as GetTodosSuccessAction).payload},
         loading: false,
       };
     }
@@ -53,6 +55,16 @@ const todos = (state = initialState, action: Action): TodosState => {
           ...state.todos,
           [typedAction.payload.id]: typedAction.payload,
         },
+      };
+    }
+    case DELETE_TODO: {
+      const typedAction = action as DeleteTodoAction;
+      const _todos = {...state.todos};
+      delete _todos[typedAction.payload];
+
+      return {
+        ...state,
+        todos: _todos,
       };
     }
     default:

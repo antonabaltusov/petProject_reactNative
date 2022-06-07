@@ -4,8 +4,10 @@ import {TodoItem} from '../../components/TodoItem/TodoItem';
 import {styles} from './TodoList.styles';
 import {useDispatch, useSelector} from 'react-redux';
 import {selectError, selectLoading, selectTodos} from '../../store/selectors';
-import {changeTodo, getTodos} from '../../store/actions';
+import {changeTodo, getTodos, removeTodo} from '../../store/actions';
 import {ActivityIndicator, Button} from '@react-native-material/core';
+import {Todo} from './TodoList.types';
+import {TextField} from '../../components/TextField/TextField';
 
 export const TodoList = () => {
   const todos = useSelector(selectTodos);
@@ -25,6 +27,22 @@ export const TodoList = () => {
     const updatedTodo = {...todos[id], completed: !todos[id].completed};
     dispatch(changeTodo(updatedTodo));
   };
+  function getNewTodoId(): number {
+    return Date.now();
+  }
+
+  const addTodo = (text: string) => {
+    const newTodo: Todo = {
+      title: text,
+      id: getNewTodoId(),
+      completed: false,
+    };
+    dispatch(changeTodo(newTodo));
+  };
+
+  const deleteTodo = (id: number) => {
+    dispatch(removeTodo(id));
+  };
 
   return (
     <>
@@ -42,12 +60,14 @@ export const TodoList = () => {
         </View>
       ) : (
         <ScrollView contentContainerStyle={styles.todosContainer}>
+          <TextField onSubmit={addTodo} />
           {Object.values(todos).map((todo, i) => (
             <TodoItem
               key={todo.id}
               todo={todo}
               i={i}
               onComplete={handlePressTodo}
+              removeTodo={deleteTodo}
             />
           ))}
         </ScrollView>
