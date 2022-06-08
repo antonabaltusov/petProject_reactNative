@@ -9,7 +9,7 @@ export const DeleteButton = ({id, onPress}: DeleteButtonProps) => {
   };
   return (
     <Pressable onPress={handlePress}>
-      <Icon name="cross" size={30} color="black" />
+      <Icon name="cross" size={30} color="red" />
     </Pressable>
   );
 };
