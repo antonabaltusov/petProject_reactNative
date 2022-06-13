@@ -1,33 +1,28 @@
-import React, {useRef} from 'react';
+import React from 'react';
 import {Animated} from 'react-native';
 import {styles} from './Checkbox.styles';
 import {CheckboxProps} from './Checkbox.types';
+import Icon from 'react-native-vector-icons/Entypo';
 
-export const Checkbox = ({checked}: CheckboxProps) => {
-  const checkboxScale = useRef(new Animated.Value(1));
-
-  const handlePress = () => {
-    Animated.timing(checkboxScale.current, {
-      toValue: 1.2,
-      useNativeDriver: true,
-      duration: 300,
-    }).start();
-  };
-
+export const Checkbox = ({scale, checked}: CheckboxProps) => {
   return (
     <Animated.View
-      onTouchEnd={handlePress}
       style={[
         styles.box,
-        checked && styles.filled,
         {
           transform: [
             {
-              scale: checkboxScale.current,
+              scale: scale.interpolate({
+                inputRange: [0, 0.7, 1],
+                outputRange: [1, 1.3, 1],
+              }),
             },
           ],
         },
-      ]}
-    />
+      ]}>
+      <Animated.View style={[styles.icon, {opacity: checked}]}>
+        <Icon name="check" size={20} color="red" />
+      </Animated.View>
+    </Animated.View>
   );
 };

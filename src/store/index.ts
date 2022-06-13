@@ -1,9 +1,9 @@
-import {createStore, applyMiddleware} from 'redux';
+import {createStore, applyMiddleware, combineReducers} from 'redux';
 import thunk from 'redux-thunk';
 import {persistStore, persistReducer} from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import rootReducer from './reducer';
+import {todosReducer} from './reducer';
 import {Action, TodosState} from './types';
 
 const persistConfig = {
@@ -13,8 +13,13 @@ const persistConfig = {
 
 const persistedReducer = persistReducer<TodosState, Action>(
   persistConfig,
-  rootReducer,
+  todosReducer,
 );
 
-export const store = createStore(persistedReducer, applyMiddleware(thunk));
+const rootReducer = combineReducers({
+  todos: persistedReducer,
+});
+
+export type RootState = ReturnType<typeof rootReducer>;
+export const store = createStore(rootReducer, applyMiddleware(thunk));
 export const persistor = persistStore(store);

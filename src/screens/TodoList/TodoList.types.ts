@@ -3,3 +3,4 @@ export type Todo = {
   id: number;
   title: string;
 };
+export type Section = {data: Todo[]; title: string};

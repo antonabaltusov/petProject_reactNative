@@ -1,31 +1,42 @@
-import React, {useEffect} from 'react';
-import {ScrollView, Text, View} from 'react-native';
+import React, {useCallback, useEffect, useMemo} from 'react';
+import {ListRenderItemInfo, SectionList, Text, View} from 'react-native';
 import {TodoItem} from '../../components/TodoItem/TodoItem';
 import {styles} from './TodoList.styles';
-import {useDispatch, useSelector} from 'react-redux';
-import {selectError, selectLoading, selectTodos} from '../../store/selectors';
-import {changeTodo, getTodos, removeTodo} from '../../store/actions';
+import {useSelector} from 'react-redux';
 import {ActivityIndicator, Button} from '@react-native-material/core';
-import {Todo} from './TodoList.types';
+import {Section, Todo} from './TodoList.types';
 import {TextField} from '../../components/TextField/TextField';
+import {selectTodosState} from '../../store/selectors';
+import {useActions} from '../../hooks/useActions';
 
 export const TodoList = () => {
-  const todos = useSelector(selectTodos);
-  const loading = useSelector(selectLoading);
-  const error = useSelector(selectError);
-  const dispatch = useDispatch();
-
-  const requestTodos = async () => {
-    // @ts-ignore
-    dispatch(getTodos());
-  };
+  const {todos, loading, error} = useSelector(selectTodosState);
+  const {getTodos, changeTodo, removeTodo} = useActions();
 
   useEffect(() => {
-    requestTodos();
+    getTodos();
   }, []);
+  const sections = useMemo(
+    () =>
+      Object.values(todos).reduce<Section[]>(
+        (acc, todo) => {
+          if (!todo.completed) {
+            acc[0].data.push(todo);
+          } else {
+            acc[1].data.push(todo);
+          }
+          return acc;
+        },
+        [
+          {data: [], title: 'Todo'},
+          {data: [], title: 'Complete'},
+        ],
+      ),
+    [todos],
+  );
   const handlePressTodo = (id: number) => {
     const updatedTodo = {...todos[id], completed: !todos[id].completed};
-    dispatch(changeTodo(updatedTodo));
+    changeTodo(updatedTodo);
   };
   function getNewTodoId(): number {
     return Date.now();
@@ -37,12 +48,23 @@ export const TodoList = () => {
       id: getNewTodoId(),
       completed: false,
     };
-    dispatch(changeTodo(newTodo));
+    changeTodo(newTodo);
   };
 
   const deleteTodo = (id: number) => {
-    dispatch(removeTodo(id));
+    removeTodo(id);
   };
+  const renderTodo = ({item, index}: ListRenderItemInfo<Todo>) => (
+    <TodoItem
+      todo={item}
+      i={index}
+      onComplete={handlePressTodo}
+      removeTodo={deleteTodo}
+    />
+  );
+  const renderSectionHeader = useCallback(({section}) => {
+    return <Text>{section.title}</Text>;
+  }, []);
 
   return (
     <>
@@ -55,22 +77,17 @@ export const TodoList = () => {
             style={{width: '33%', alignSelf: 'center'}}
             variant="outlined"
             title="Retry"
-            onPress={requestTodos}
+            onPress={getTodos}
           />
         </View>
       ) : (
-        <ScrollView contentContainerStyle={styles.todosContainer}>
-          <TextField onSubmit={addTodo} />
-          {Object.values(todos).map((todo, i) => (
-            <TodoItem
-              key={todo.id}
-              todo={todo}
-              i={i}
-              onComplete={handlePressTodo}
-              removeTodo={deleteTodo}
-            />
-          ))}
-        </ScrollView>
+        <SectionList
+          ListHeaderComponent={() => <TextField onSubmit={addTodo} />}
+          renderSectionHeader={renderSectionHeader}
+          sections={sections}
+          renderItem={renderTodo}
+          contentContainerStyle={styles.todosContainer}
+        />
       )}
     </>
   );

@@ -1,3 +1,6 @@
+import {Animated} from 'react-native';
+
 export interface CheckboxProps {
-  checked: boolean;
+  scale: Animated.Value;
+  checked: Animated.Value;
 }

@@ -1,17 +1,12 @@
 import {FETCH_STATUSES} from '../utils/constants';
 import {
-  CHANGE_TODO,
-  DELETE_TODO,
-  GET_TODOS_FAILURE,
-  GET_TODOS_REQUEST,
-  GET_TODOS_SUCCESS,
-} from './actions';
-import {
   Action,
   ChangeTodoAction,
   DeleteTodoAction,
   GetTodosSuccessAction,
   TodosState,
+  TodosActionType,
+  GetTodosFailureAction,
 } from './types';
 
 const initialState: TodosState = {
@@ -21,9 +16,12 @@ const initialState: TodosState = {
   loading: false,
 };
 
-const todos = (state = initialState, action: Action): TodosState => {
+export const todosReducer = (
+  state = initialState,
+  action: Action,
+): TodosState => {
   switch (action.type) {
-    case GET_TODOS_REQUEST: {
+    case TodosActionType.GET_TODOS_REQUEST: {
       return {
         ...state,
         status: FETCH_STATUSES.request,
@@ -31,7 +29,7 @@ const todos = (state = initialState, action: Action): TodosState => {
         error: null,
       };
     }
-    case GET_TODOS_SUCCESS: {
+    case TodosActionType.GET_TODOS_SUCCESS: {
       return {
         ...state,
         status: FETCH_STATUSES.success,
@@ -39,15 +37,15 @@ const todos = (state = initialState, action: Action): TodosState => {
         loading: false,
       };
     }
-    case GET_TODOS_FAILURE: {
+    case TodosActionType.GET_TODOS_FAILURE: {
       return {
         ...state,
         status: FETCH_STATUSES.failure,
-        error: (action as GetTodosSuccessAction).payload,
+        error: (action as GetTodosFailureAction).payload,
         loading: false,
       };
     }
-    case CHANGE_TODO: {
+    case TodosActionType.CHANGE_TODO: {
       const typedAction = action as ChangeTodoAction;
       return {
         ...state,
@@ -57,7 +55,7 @@ const todos = (state = initialState, action: Action): TodosState => {
         },
       };
     }
-    case DELETE_TODO: {
+    case TodosActionType.DELETE_TODO: {
       const typedAction = action as DeleteTodoAction;
       const _todos = {...state.todos};
       delete _todos[typedAction.payload];
@@ -71,5 +69,3 @@ const todos = (state = initialState, action: Action): TodosState => {
       return state;
   }
 };
-
-export default todos;
