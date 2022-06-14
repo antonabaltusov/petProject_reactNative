@@ -71,10 +71,10 @@ export const TodoList = () => {
       {loading && <ActivityIndicator style={styles.loader} size="large" />}
       {error ? (
         <View style={styles.error}>
-          <Text style={{alignSelf: 'center'}}>Error</Text>
-          <Text style={{alignSelf: 'center'}}>{error.message}</Text>
+          <Text style={styles.center}>Error</Text>
+          <Text style={styles.center}>{error.message}</Text>
           <Button
-            style={{width: '33%', alignSelf: 'center'}}
+            style={styles.button}
             variant="outlined"
             title="Retry"
             onPress={getTodos}

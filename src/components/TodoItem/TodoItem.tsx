@@ -35,17 +35,14 @@ export const TodoItem = ({i, todo, onComplete, removeTodo}: TodoItemProps) => {
   };
   return (
     <TouchableOpacity onPress={handlePress} style={styles.root}>
-      <>
-        <Checkbox
-          scale={checkboxScale.current}
-          checked={checkboxChecked.current}
-        />
-        <Text
-          style={[styles.todoText, todo.completed && styles.todoTextCrossed]}>
-          {i + 1}: {todo.title}
-        </Text>
-        <DeleteButton id={todo.id} onPress={onDelete} />
-      </>
+      <Checkbox
+        scale={checkboxScale.current}
+        checked={checkboxChecked.current}
+      />
+      <Text style={[styles.todoText, todo.completed && styles.todoTextCrossed]}>
+        {i + 1}: {todo.title}
+      </Text>
+      <DeleteButton id={todo.id} onPress={onDelete} />
     </TouchableOpacity>
   );
 };

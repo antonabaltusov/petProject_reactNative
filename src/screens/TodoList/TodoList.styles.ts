@@ -12,4 +12,11 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: '50%',
   },
+  center: {
+    alignSelf: 'center',
+  },
+  button: {
+    alignSelf: 'center',
+    width: '33%',
+  },
 });
