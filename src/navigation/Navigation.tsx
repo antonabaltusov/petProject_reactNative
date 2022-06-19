@@ -5,11 +5,13 @@ import {TodoList} from '../screens/TodoList/TodoList';
 import {RootBottomTabParams, RootStackParams} from './Navigation.types';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {NullCom} from '../components/nullComponent/Nullcom';
+import {TodoDetails} from '../screens/TodoDetails/TodoDetails';
 
 const RootStack = createNativeStackNavigator<RootStackParams>();
 export const MyStack = () => (
   <RootStack.Navigator initialRouteName="TodoList">
     <RootStack.Screen name="TodoList" component={TodoList} />
+    <RootStack.Screen name="TodoDetails" component={TodoDetails} />
   </RootStack.Navigator>
 );
 

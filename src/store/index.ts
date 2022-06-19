@@ -16,10 +16,9 @@ const persistedReducer = persistReducer<TodosState, Action>(
   todosReducer,
 );
 
-const rootReducer = combineReducers({
+export const rootReducer = combineReducers({
   todos: persistedReducer,
 });
 
-export type RootState = ReturnType<typeof rootReducer>;
 export const store = createStore(rootReducer, applyMiddleware(thunk));
 export const persistor = persistStore(store);

@@ -1,3 +1,4 @@
+import {rootReducer} from './index';
 import {Todo} from '../screens/TodoList/TodoList.types';
 import {FETCH_STATUSES} from '../utils/constants';
 
@@ -45,3 +46,5 @@ export type Action =
   | GetTodosFailureAction
   | ChangeTodoAction
   | DeleteTodoAction;
+
+export type RootState = ReturnType<typeof rootReducer>;

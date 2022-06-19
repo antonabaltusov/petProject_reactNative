@@ -1,9 +1,9 @@
-import React from 'react';
+import React, {FC} from 'react';
 import {Pressable} from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 import {DeleteButtonProps} from './DeleteButton.types';
 
-export const DeleteButton = ({id, onPress}: DeleteButtonProps) => {
+export const DeleteButton: FC<DeleteButtonProps> = ({id, onPress}) => {
   const handlePress = () => {
     onPress(id);
   };

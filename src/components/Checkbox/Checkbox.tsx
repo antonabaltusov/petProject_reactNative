@@ -1,10 +1,10 @@
-import React from 'react';
+import React, {FC} from 'react';
 import {Animated} from 'react-native';
 import {styles} from './Checkbox.styles';
 import {CheckboxProps} from './Checkbox.types';
 import Icon from 'react-native-vector-icons/Entypo';
 
-export const Checkbox = ({scale, checked}: CheckboxProps) => {
+export const Checkbox: FC<CheckboxProps> = ({scale, checked}) => {
   return (
     <Animated.View
       style={[

@@ -1,11 +1,16 @@
-import React, {useRef} from 'react';
+import React, {FC, useRef} from 'react';
 import {Animated, Text, TouchableOpacity} from 'react-native';
 import {Checkbox} from '../Checkbox/Checkbox';
 import {DeleteButton} from '../DeleteButton/DeleteButton';
 import {styles} from './TodoItem.styles';
 import {TodoItemProps} from './TodoItem.types';
 
-export const TodoItem = ({i, todo, onComplete, removeTodo}: TodoItemProps) => {
+export const TodoItem: FC<TodoItemProps> = ({
+  i,
+  todo,
+  onComplete,
+  removeTodo,
+}) => {
   const checkboxScale = useRef(new Animated.Value(0));
   const checkboxChecked = useRef(new Animated.Value(todo.completed ? 1 : 0));
   const handlePress = () => {

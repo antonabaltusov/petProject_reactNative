@@ -1,9 +1,9 @@
-import React, {useState} from 'react';
+import React, {FC, useState} from 'react';
 import {TextInput} from 'react-native';
 import {styles} from './TextField.styles';
 import {TextFieldProps} from './TextField.types';
 
-export const TextField = ({onSubmit}: TextFieldProps) => {
+export const TextField: FC<TextFieldProps> = ({onSubmit}) => {
   const [newTodoText, setNewTodoText] = useState('');
   const onSubmitEditing = () => {
     if (newTodoText) {
