@@ -1,7 +1,9 @@
+import {useSelector} from 'react-redux';
 import {Dispatch} from 'redux';
 import {ThunkAction} from 'redux-thunk';
 import {Todo} from '../screens/TodoList/TodoList.types';
 import {TODOS_URL} from '../utils/constants';
+import {selectTodosState} from './selectors';
 import {
   Action,
   GetTodosRequestAction,
@@ -45,11 +47,11 @@ export const getTodos =
       dispatch(getTodosRequest());
       const response = await fetch(TODOS_URL);
       const result: Todo[] = await response.json();
-      const todos = result.reduce((acc, todo) => {
-        acc[todo.id] = todo;
+      const Newtodos = result.reduce((acc, todo) => {
+        acc[todo.id] = {...todo, imgs: []};
         return acc;
       }, {});
-      dispatch(getTodosSuccess(todos));
+      dispatch(getTodosSuccess(Newtodos));
     } catch (e) {
       dispatch(getTodosFailure(e));
     }

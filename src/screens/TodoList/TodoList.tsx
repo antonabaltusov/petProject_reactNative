@@ -4,17 +4,19 @@ import {TodoItem} from '../../components/TodoItem/TodoItem';
 import {styles} from './TodoList.styles';
 import {useSelector} from 'react-redux';
 import {ActivityIndicator, Button} from '@react-native-material/core';
-import {Section, Todo} from './TodoList.types';
+import {Section, Todo, TodoListProps} from './TodoList.types';
 import {TextField} from '../../components/TextField/TextField';
 import {selectTodosState} from '../../store/selectors';
 import {useActions} from '../../hooks/useActions';
 
-export const TodoList = () => {
+export const TodoList = ({navigation}: TodoListProps) => {
   const {todos, loading, error} = useSelector(selectTodosState);
   const {getTodos, changeTodo, removeTodo} = useActions();
 
   useEffect(() => {
-    getTodos();
+    if (!todos.length) {
+      getTodos();
+    }
   }, []);
   const sections = useMemo(
     () =>
@@ -38,17 +40,19 @@ export const TodoList = () => {
     const updatedTodo = {...todos[id], completed: !todos[id].completed};
     changeTodo(updatedTodo);
   };
-  function getNewTodoId(): number {
-    return Date.now();
-  }
 
   const addTodo = (text: string) => {
     const newTodo: Todo = {
       title: text,
-      id: getNewTodoId(),
+      id: Date.now(),
       completed: false,
+      imgs: [],
     };
     changeTodo(newTodo);
+  };
+
+  const toDetails = (id: number) => {
+    navigation.navigate('TodoDetails', {todoId: id});
   };
 
   const deleteTodo = (id: number) => {
@@ -58,6 +62,7 @@ export const TodoList = () => {
     <TodoItem
       todo={item}
       i={index}
+      onPress={toDetails}
       onComplete={handlePressTodo}
       removeTodo={deleteTodo}
     />
@@ -83,6 +88,7 @@ export const TodoList = () => {
       ) : (
         <SectionList
           ListHeaderComponent={() => <TextField onSubmit={addTodo} />}
+          ListHeaderComponentStyle={styles.header}
           renderSectionHeader={renderSectionHeader}
           sections={sections}
           renderItem={renderTodo}
