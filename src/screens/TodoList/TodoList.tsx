@@ -8,16 +8,49 @@ import {Section, Todo, TodoListProps} from './TodoList.types';
 import {TextField} from '../../components/TextField/TextField';
 import {selectTodosState} from '../../store/selectors';
 import {useActions} from '../../hooks/useActions';
+import {FETCH_STATUSES} from '../../utils/constants';
+import notifee, {
+  AndroidImportance,
+  TimestampTrigger,
+  TriggerType,
+} from '@notifee/react-native';
 
 export const TodoList = ({navigation}: TodoListProps) => {
-  const {todos, loading, error} = useSelector(selectTodosState);
+  const {todos, loading, error, status} = useSelector(selectTodosState);
   const {getTodos, changeTodo, removeTodo} = useActions();
 
   useEffect(() => {
-    if (!todos.length) {
+    if (status !== FETCH_STATUSES.success) {
       getTodos();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  const isAppOpenedByNotif = async () => {
+    const initNotif = await notifee.getInitialNotification();
+    if (initNotif) {
+      const {id} = initNotif.notification.data;
+      navigation.navigate('TodoDetails', {
+        todoId: +(id as string),
+      });
+    }
+  };
+  useEffect(() => {
+    isAppOpenedByNotif();
+  }, []);
+  // useEffect(() => {
+  //   return notifee.onForegroundEvent(({type, detail}) => {
+  //     switch (type) {
+  //       case EventType.DISMISSED:
+  //         console.log('User dismissed notification', detail.notification);
+  //         break;
+  //       case EventType.PRESS:
+  //         console.log('User pressed notification', detail.notification);
+  //         break;
+  //       default:
+  //         console.log(type);
+  //     }
+  //   });
+  // }, []);
   const sections = useMemo(
     () =>
       Object.values(todos).reduce<Section[]>(
@@ -70,6 +103,65 @@ export const TodoList = ({navigation}: TodoListProps) => {
   const renderSectionHeader = useCallback(({section}) => {
     return <Text>{section.title}</Text>;
   }, []);
+  const sendPush = async () => {
+    await notifee.requestPermission();
+    const channelId = await notifee.createChannel({
+      id: 'default',
+      name: 'default',
+      importance: AndroidImportance.HIGH,
+    });
+    const trigger: TimestampTrigger = {
+      type: TriggerType.TIMESTAMP,
+      timestamp: Date.now() + 5000, // Через 5 секунд
+    };
+    await notifee.setNotificationCategories([
+      {
+        id: 'post',
+        actions: [
+          {
+            id: 'like',
+            title: 'Like Post',
+          },
+          {
+            id: 'dislike',
+            title: 'Dislike Post',
+          },
+        ],
+      },
+    ]);
+    await notifee.createTriggerNotification(
+      {
+        title: 'Notification Title',
+        body: 'Main body content of the notification',
+        android: {
+          channelId,
+          importance: AndroidImportance.HIGH,
+          pressAction: {
+            id: 'default',
+          },
+        },
+        ios: {
+          categoryId: 'post',
+        },
+        data: {
+          id: '1',
+        },
+      },
+      trigger,
+    );
+    // await notifee.displayNotification({
+    //   title: 'Notification Title',
+    //   body: 'Main body content of the notification',
+    //   android: {
+    //     channelId: channelId,
+    //     // pressAction is needed if you want the notification to open the app when pressed
+    //     pressAction: {
+    //       id: 'default',
+    //     },
+    //   },
+    //   ios: {},
+    // });
+  };
 
   return (
     <>
@@ -86,14 +178,17 @@ export const TodoList = ({navigation}: TodoListProps) => {
           />
         </View>
       ) : (
-        <SectionList
-          ListHeaderComponent={() => <TextField onSubmit={addTodo} />}
-          ListHeaderComponentStyle={styles.header}
-          renderSectionHeader={renderSectionHeader}
-          sections={sections}
-          renderItem={renderTodo}
-          contentContainerStyle={styles.todosContainer}
-        />
+        <>
+          <Button title="Send push" onPress={sendPush} />
+          <SectionList
+            ListHeaderComponent={() => <TextField onSubmit={addTodo} />}
+            ListHeaderComponentStyle={styles.header}
+            renderSectionHeader={renderSectionHeader}
+            sections={sections}
+            renderItem={renderTodo}
+            contentContainerStyle={styles.todosContainer}
+          />
+        </>
       )}
     </>
   );

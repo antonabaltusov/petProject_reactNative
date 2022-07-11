@@ -1,4 +1,4 @@
-import React, {FC} from 'react';
+import React, {FC, useCallback} from 'react';
 import {Image, Text, TouchableOpacity, View} from 'react-native';
 import {Checkbox} from '../Checkbox/Checkbox';
 import {DeleteButton} from '../DeleteButton/DeleteButton';
@@ -12,8 +12,6 @@ export const TodoItem: FC<TodoItemProps> = ({
   removeTodo,
   onPress,
 }) => {
-  console.log(todo.imgs[0]);
-
   const handlePress = () => {
     onPress(todo.id);
   };
@@ -23,6 +21,13 @@ export const TodoItem: FC<TodoItemProps> = ({
   const onDelete = () => {
     removeTodo(todo.id);
   };
+  const getImg = useCallback(({imgs}) => {
+    if (imgs) {
+      imgs.length ? (
+        <Image source={{uri: imgs[0].uri}} style={styles.image} />
+      ) : null;
+    }
+  }, []);
 
   return (
     <View style={styles.root}>
@@ -36,10 +41,10 @@ export const TodoItem: FC<TodoItemProps> = ({
         </TouchableOpacity>
       </View>
       <View style={styles.right}>
-        {todo.imgs[0] ? (
-          <Image source={{uri: todo.imgs[0].uri}} style={styles.image} />
-        ) : null}
-        <DeleteButton id={todo.id} onPress={onDelete} />
+        <>
+          {getImg(todo)}
+          <DeleteButton id={todo.id} onPress={onDelete} />
+        </>
       </View>
     </View>
   );

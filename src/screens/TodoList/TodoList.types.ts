@@ -5,6 +5,7 @@ export type Todo = {
   completed: boolean;
   id: number;
   title: string;
+  notificationIsOn: boolean;
   imgs: Asset[];
 };
 export type TodoListProps = {
