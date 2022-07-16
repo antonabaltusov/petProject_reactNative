@@ -1,5 +1,11 @@
 import React, {useCallback, useEffect, useMemo} from 'react';
-import {ListRenderItemInfo, SectionList, Text, View} from 'react-native';
+import {
+  FlatList,
+  ListRenderItemInfo,
+  SectionList,
+  Text,
+  View,
+} from 'react-native';
 import {TodoItem} from '../../components/TodoItem/TodoItem';
 import {styles} from './TodoList.styles';
 import {useSelector} from 'react-redux';
@@ -51,24 +57,37 @@ export const TodoList = ({navigation}: TodoListProps) => {
   //     }
   //   });
   // }, []);
-  const sections = useMemo(
-    () =>
-      Object.values(todos).reduce<Section[]>(
-        (acc, todo) => {
-          if (!todo.completed) {
-            acc[0].data.push(todo);
-          } else {
-            acc[1].data.push(todo);
-          }
-          return acc;
-        },
-        [
-          {data: [], title: 'Todo'},
-          {data: [], title: 'Complete'},
-        ],
-      ),
-    [todos],
-  );
+  // const sections = useMemo(
+  //   () =>
+  //     Object.values(todos).reduce<Section[]>(
+  //       (acc, todo) => {
+  //         if (!todo.completed) {
+  //           acc[0].data.push(todo);
+  //         } else {
+  //           acc[1].data.push(todo);
+  //         }
+  //         return acc;
+  //       },
+  //       [
+  //         {data: [], title: 'Todo'},
+  //         {data: [], title: 'Complete'},
+  //       ],
+  //     ),
+  //   [todos],
+  // );
+  const sections = useMemo(() => {
+    return Object.values(todos).reduce<{completed: Todo[]; notCompl: Todo[]}>(
+      (acc, el) => {
+        if (el.completed) {
+          acc.completed.push(el);
+        } else {
+          acc.notCompl.push(el);
+        }
+        return acc;
+      },
+      {completed: [], notCompl: []},
+    );
+  }, [todos]);
   const handlePressTodo = (id: number) => {
     const updatedTodo = {...todos[id], completed: !todos[id].completed};
     changeTodo(updatedTodo);
@@ -180,13 +199,20 @@ export const TodoList = ({navigation}: TodoListProps) => {
       ) : (
         <>
           <Button title="Send push" onPress={sendPush} />
-          <SectionList
+          {/* <SectionList
             ListHeaderComponent={() => <TextField onSubmit={addTodo} />}
             ListHeaderComponentStyle={styles.header}
             renderSectionHeader={renderSectionHeader}
             sections={sections}
             renderItem={renderTodo}
             contentContainerStyle={styles.todosContainer}
+          /> */}
+          <FlatList
+            data={sections.completed}
+            contentContainerStyle={styles.todosContainer}
+            style={styles.todosContainer}
+            ListHeaderComponent={() => <TextField onSubmit={addTodo} />}
+            renderItem={renderTodo}
           />
         </>
       )}
