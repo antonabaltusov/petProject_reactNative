@@ -1,3 +1,4 @@
+import {rootReducer} from './index';
 import {Todo} from '../screens/TodoList/TodoList.types';
 import {FETCH_STATUSES} from '../utils/constants';
 
@@ -11,26 +12,39 @@ export type TodosState = {
   error: any;
   todos: TodosMap;
 };
+export enum TodosActionType {
+  GET_TODOS_REQUEST = 'TODOS::GET_TODOS_REQUEST',
+  GET_TODOS_SUCCESS = 'TODOS::GET_TODOS_SUCCESS',
+  GET_TODOS_FAILURE = 'TODOS::GET_TODOS_FAILURE',
+  CHANGE_TODO = 'TODOS::CHANGE_TODO',
+  DELETE_TODO = 'TODOS::DELETE_TODO',
+}
+export interface GetTodosRequestAction {
+  type: TodosActionType.GET_TODOS_REQUEST;
+}
 
-export type GetTodosRequestAction = {
-  type: string;
-};
-export type GetTodosSuccessAction = {
-  type: string;
+export interface GetTodosSuccessAction {
+  type: TodosActionType.GET_TODOS_SUCCESS;
   payload: TodosMap;
-};
-export type GetTodosFailureAction = {
-  type: string;
+}
+export interface GetTodosFailureAction {
+  type: TodosActionType.GET_TODOS_FAILURE;
   payload: any;
-};
-
-export type ChangeTodoAction = {
-  type: string;
+}
+export interface ChangeTodoAction {
+  type: TodosActionType;
   payload: Todo;
-};
+}
+export interface DeleteTodoAction {
+  type: TodosActionType;
+  payload: number;
+}
 
 export type Action =
   | GetTodosRequestAction
   | GetTodosSuccessAction
   | GetTodosFailureAction
-  | ChangeTodoAction;
+  | ChangeTodoAction
+  | DeleteTodoAction;
+
+export type RootState = ReturnType<typeof rootReducer>;
